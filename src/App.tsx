@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { BrainCircuit, Sparkles, UserRound } from 'lucide-react'
+import { BrainCircuit, UserRound } from 'lucide-react'
 import { CHARACTERS, isCharacterId, type CharacterId } from './characters'
 import { BottomNav, type TabId } from './components/layout/BottomNav'
 import { CharacterSwitch } from './components/layout/CharacterSwitch'
@@ -10,6 +10,7 @@ import { useSceneQuality } from './hooks/useSceneQuality'
 import { readStorage, writeStorage } from './lib/storage'
 import { ChatPage } from './pages/ChatPage'
 import { StagePage } from './pages/StagePage'
+import { WishesPage } from './pages/WishesPage'
 import styles from './App.module.css'
 
 const CHARACTER_KEY = 'zr:character'
@@ -21,21 +22,7 @@ function renderPage(tab: TabId, character: CharacterId) {
       return <ChatPage character={character} />
 
     case 'wishes':
-      return (
-        <StagePage
-          id="wishes"
-          stage="Этап 3"
-          title="Желания"
-          description="Здесь появятся желания: план из 3–7 шагов, прогресс и статус. Без счётчиков и лимитов — желаний может быть сколько угодно."
-          icon={Sparkles}
-          items={[
-            'Создание желания текстом или голосом',
-            'План из 3–7 шагов от рыбки',
-            'Прогресс-бар и статусы: новое / в работе / исполнено',
-            'Праздничная анимация исполнения',
-          ]}
-        />
-      )
+      return <WishesPage character={character} />
 
     case 'memory':
       return (

@@ -45,18 +45,6 @@ def test_chat_rejects_unknown_character(client: TestClient) -> None:
     assert response.json()["error"]["code"] == "validation_error"
 
 
-def test_wishes_stub(client: TestClient) -> None:
-    response = client.get("/api/wishes")
-    assert response.status_code == 501
-    assert response.json()["error"]["code"] == "not_implemented"
-
-    created = client.post("/api/wishes", json={"title": "Начать бегать по утрам"})
-    assert created.status_code == 501
-
-    patched = client.patch("/api/wishes/wish-1", json={"status": "done"})
-    assert patched.status_code == 501
-
-
 def test_memory_stub(client: TestClient) -> None:
     assert client.get("/api/memory").status_code == 501
 

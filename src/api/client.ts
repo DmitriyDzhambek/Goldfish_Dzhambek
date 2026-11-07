@@ -3,6 +3,8 @@
  * чтобы обработка ошибок и базовый URL были в одном месте.
  */
 
+import { getGuestId } from '../lib/guest'
+
 const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim()
 export const API_BASE_URL = (configuredBase && configuredBase.length > 0
   ? configuredBase
@@ -52,6 +54,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const requestHeaders = new Headers(headers)
 
   if (!requestHeaders.has('Accept')) requestHeaders.set('Accept', 'application/json')
+  if (!requestHeaders.has('X-Guest-Id')) requestHeaders.set('X-Guest-Id', getGuestId())
   if (json !== undefined) requestHeaders.set('Content-Type', 'application/json')
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -128,6 +131,7 @@ export async function* streamChat(
     headers: {
       Accept: 'text/event-stream',
       'Content-Type': 'application/json',
+      'X-Guest-Id': getGuestId(),
     },
     body: JSON.stringify(request),
     ...(signal ? { signal } : {}),
@@ -235,6 +239,10 @@ export const api = {
       apiRequest<Wish>('/wishes', { method: 'POST', json: input }),
     update: (id: string, patch: UpdateWishInput) =>
       apiRequest<Wish>(`/wishes/${encodeURIComponent(id)}`, { method: 'PATCH', json: patch }),
+    remove: (id: string) =>
+      apiRequest<void>(`/wishes/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+    regeneratePlan: (id: string) =>
+      apiRequest<Wish>(`/wishes/${encodeURIComponent(id)}/plan`, { method: 'POST' }),
   },
   memory: {
     get: () => apiRequest<MemoryResponse>('/memory'),

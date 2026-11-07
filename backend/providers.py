@@ -196,6 +196,35 @@ def offline_reply(character: str) -> str:
     )
 
 
+async def complete_text(
+    messages: Sequence[ChatMessage],
+    *,
+    settings: Settings,
+) -> tuple[str, ProviderName | None]:
+    """Нестриминговый ответ для служебных задач (например, план желания).
+
+    Возвращает `(текст, провайдер)` или `("", None)`, если все провайдеры
+    недоступны. Офлайн-шаблон добавляет вызывающий код — здесь мы не
+    подменяем план текстом чата.
+    """
+    for provider in build_provider_chain(settings):
+        chunks: list[str] = []
+
+        try:
+            async for delta in stream_provider(provider, messages):
+                chunks.append(delta)
+        except ProviderError:
+            continue
+        except Exception:  # noqa: BLE001 - служебный вызов не должен ронять API
+            continue
+
+        text = "".join(chunks).strip()
+        if text:
+            return text, provider.name
+
+    return "", None
+
+
 async def stream_with_fallback(
     messages: Sequence[ChatMessage],
     *,

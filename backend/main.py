@@ -20,7 +20,7 @@ from backend.errors import (
 )
 from backend.routers import auth, chat, memory, wishes
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.3.0"
 
 
 def create_app() -> FastAPI:
