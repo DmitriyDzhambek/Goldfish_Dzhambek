@@ -15,6 +15,7 @@ import { AdminTab } from './pages/AdminTab'
 import { DiaryTab } from './pages/DiaryTab'
 import { HistoryPage } from './pages/HistoryPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { WorkspaceTab } from './pages/WorkspaceTab'
 import styles from './App.module.css'
 
 const CHARACTER_KEY = 'zr:character'
@@ -93,6 +94,16 @@ export function App() {
           <DiaryTab
             onIdeaToChat={(text) => {
               setChatSeed(text)
+              setTab('home')
+            }}
+          />
+        )
+
+      case 'workspace':
+        return (
+          <WorkspaceTab
+            onDiscuss={(prompt) => {
+              setChatSeed(prompt)
               setTab('home')
             }}
           />

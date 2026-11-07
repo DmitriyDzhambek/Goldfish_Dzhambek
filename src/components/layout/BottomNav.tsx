@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   BookOpen,
+  GitBranch,
   MessageCircle,
   Settings,
   Shield,
@@ -9,7 +10,7 @@ import {
 } from 'lucide-react'
 import styles from './BottomNav.module.css'
 
-export type TabId = 'home' | 'history' | 'diary' | 'admin' | 'settings'
+export type TabId = 'home' | 'workspace' | 'history' | 'diary' | 'admin' | 'settings'
 
 interface BottomNavProps {
   value: TabId
@@ -28,6 +29,7 @@ interface NavItem {
 const BASE_ITEMS: ReadonlyArray<NavItem> = [
   { id: 'home', label: 'Чат', icon: MessageCircle },
   { id: 'diary', label: 'Дневник', icon: BookOpen },
+  { id: 'workspace', label: 'Проекты', icon: GitBranch },
   { id: 'settings', label: 'Настройки', icon: Settings },
 ]
 
