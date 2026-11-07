@@ -1,0 +1,29 @@
+{
+  "name": "zolotaya-rybka",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Золотая рыбка — бесплатный ИИ-ассистент, который превращает желания в план и доводит дела до конца",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run check && vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
+    "test:backend": "python -m pytest backend/tests -q"
+  },
+  "dependencies": {
+    "framer-motion": "^11.15.0",
+    "lucide-react": "^0.469.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.3",
+    "vite": "^5.4.11"
+  }
+}

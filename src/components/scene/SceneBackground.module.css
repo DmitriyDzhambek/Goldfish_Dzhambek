@@ -1,0 +1,252 @@
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--bg-abyss);
+  contain: layout paint;
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 70% at 50% -12%, var(--scene-glow), transparent 62%),
+    radial-gradient(70% 55% at 82% 16%, var(--scene-aqua), transparent 70%),
+    linear-gradient(
+      180deg,
+      var(--scene-top) 0%,
+      var(--scene-deep) 34%,
+      var(--scene-mid) 68%,
+      var(--scene-soft) 100%
+    );
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70% 50% at 50% 40%, rgba(249, 207, 107, 0.07), transparent 70%);
+  mix-blend-mode: screen;
+}
+
+/* ── Каустики: медленно ползущие световые пятна ─────────────── */
+
+.caustics {
+  position: absolute;
+  inset: -12%;
+  filter: blur(12px);
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+.caustics span {
+  position: absolute;
+  width: 46vw;
+  height: 46vw;
+  max-width: 640px;
+  max-height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(249, 207, 107, 0.17),
+    rgba(249, 207, 107, 0.05) 46%,
+    transparent 72%
+  );
+  animation: causticDrift 42s var(--ease-soft) infinite alternate;
+  will-change: transform;
+}
+
+.caustics span:nth-child(1) {
+  top: 2%;
+  left: -8%;
+  animation-duration: 48s;
+}
+
+.caustics span:nth-child(2) {
+  top: 26%;
+  right: -12%;
+  background: radial-gradient(
+    closest-side,
+    rgba(95, 224, 204, 0.13),
+    rgba(95, 224, 204, 0.04) 48%,
+    transparent 72%
+  );
+  animation-duration: 59s;
+  animation-direction: alternate-reverse;
+}
+
+.caustics span:nth-child(3) {
+  bottom: 4%;
+  left: 28%;
+  animation-duration: 37s;
+  opacity: 0.7;
+}
+
+/* ── Звёзды и планктон ─────────────────────────────────────── */
+
+.stars {
+  position: absolute;
+  inset: 0;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--star);
+  box-shadow: 0 0 6px rgba(233, 243, 255, 0.55);
+  opacity: var(--star-opacity, 0.5);
+  animation: twinkle var(--star-duration, 5s) ease-in-out var(--star-delay, 0s) infinite;
+  will-change: opacity, transform;
+}
+
+/* ── Луч света сверху ─────────────────────────────────────── */
+
+.beam {
+  position: absolute;
+  top: -24%;
+  left: 50%;
+  width: 44vw;
+  height: 132%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 247, 221, 0.16),
+    rgba(255, 247, 221, 0.02) 55%,
+    transparent 78%
+  );
+  filter: blur(30px);
+  transform: translate3d(-60%, 0, 0) rotate(15deg);
+  transform-origin: top center;
+  opacity: 0.55;
+  animation: beamSway 22s var(--ease-soft) infinite alternate;
+  will-change: transform;
+}
+
+.fog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36vh;
+  background: linear-gradient(180deg, transparent, rgba(2, 4, 12, 0.5) 68%, rgba(2, 4, 12, 0.78));
+}
+
+/* ── Волны в три слоя ─────────────────────────────────────── */
+
+.waves {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: clamp(170px, 34vh, 340px);
+}
+
+.waveTrack {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  width: 200%;
+  animation: waveSlide linear infinite;
+  will-change: transform;
+}
+
+.wave {
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
+}
+
+.waveBack {
+  height: 100%;
+  color: var(--wave-2);
+  opacity: 0.28;
+  animation-duration: 38s;
+}
+
+.waveMid {
+  height: 74%;
+  color: var(--wave-1);
+  opacity: 0.62;
+  animation-duration: 25s;
+  animation-direction: reverse;
+}
+
+.waveFront {
+  height: 52%;
+  color: var(--bg-abyss);
+  opacity: 0.92;
+  animation-duration: 17s;
+  filter: drop-shadow(0 -12px 30px rgba(249, 207, 107, 0.06));
+}
+
+/* ── Зерно ────────────────────────────────────────────────── */
+
+.noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* ── Ключевые кадры ───────────────────────────────────────── */
+
+@keyframes causticDrift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6vw, 4vh, 0) scale(1.18);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: var(--star-opacity, 0.6);
+    transform: scale(1);
+  }
+}
+
+@keyframes beamSway {
+  from {
+    transform: translate3d(-62%, 0, 0) rotate(13deg) scaleX(1);
+  }
+  to {
+    transform: translate3d(-48%, 0, 0) rotate(19deg) scaleX(1.12);
+  }
+}
+
+@keyframes waveSlide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* На слабых устройствах убираем самое дорогое — blur и луч. */
+:global(html[data-quality='lite']) .beam {
+  display: none;
+}
+
+:global(html[data-quality='lite']) .noise {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .beam {
+    width: 70vw;
+    opacity: 0.4;
+  }
+
+  .waves {
+    height: clamp(150px, 30vh, 260px);
+  }
+}

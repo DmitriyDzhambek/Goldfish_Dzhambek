@@ -1,0 +1,44 @@
+.card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--stroke);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.028) 46%, rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+/* Тёплый блик сверху — «стекло под водой». */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120% 80% at 50% -20%, rgba(249, 207, 107, 0.1), transparent 55%);
+}
+
+.interactive {
+  transition:
+    transform 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out),
+    border-color 0.35s var(--ease-out);
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .interactive:hover {
+    transform: translate3d(0, -3px, 0);
+    border-color: var(--stroke-gold);
+    box-shadow: var(--shadow-card), var(--glow-gold), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  }
+}
+
+/* На слабых устройствах backdrop-filter дорог — заменяем плотной подложкой. */
+:global(html[data-quality='lite']) .card {
+  background: rgba(10, 20, 44, 0.78);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

@@ -1,0 +1,95 @@
+/* ─────────────────────────────────────────────────────────────
+   Дизайн-система «Ночное море»
+   Все цвета, радиусы, тени и тайминги — только отсюда.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: dark;
+
+  /* Типографика: серифный дисплей + системный гротеск.
+     Без внешних шрифтов — приложение работает офлайн. */
+  --font-display: Georgia, 'PT Serif', 'Times New Roman', serif;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Базовые поверхности */
+  --bg-abyss: #02040c;
+  --bg-deep: #050b1c;
+  --bg-mid: #0a1634;
+  --bg-soft: #141c46;
+
+  /* Сцена: переопределяются для персонажа «Колобок» */
+  --scene-top: #02040c;
+  --scene-deep: #050b1c;
+  --scene-mid: #0a1634;
+  --scene-soft: #141c46;
+  --scene-glow: rgba(64, 92, 190, 0.42);
+  --scene-aqua: rgba(95, 224, 204, 0.12);
+  --wave-1: #0a1a3f;
+  --wave-2: #122a5c;
+  --wave-crest: rgba(249, 207, 107, 0.16);
+  --star: #e9f3ff;
+
+  /* Золото */
+  --gold-100: #fff6d9;
+  --gold-200: #ffe9ab;
+  --gold-300: #f9cf6b;
+  --gold-400: #f0b94b;
+  --gold-500: #d99a2b;
+  --gold-600: #b87a18;
+  --gold-700: #8a5a12;
+
+  /* Бирюза */
+  --aqua-200: #c3fff6;
+  --aqua-400: #5fe0cc;
+  --aqua-600: #1f9b8c;
+
+  /* Текст */
+  --text: #f7f3e8;
+  --text-dim: #b9c3dc;
+  --text-mute: #808cab;
+
+  /* Стекло */
+  --glass: rgba(255, 255, 255, 0.055);
+  --glass-strong: rgba(255, 255, 255, 0.09);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --stroke-soft: rgba(255, 255, 255, 0.07);
+  --stroke-gold: rgba(249, 207, 107, 0.3);
+
+  /* Тени и свечение */
+  --shadow-soft: 0 18px 44px -28px rgba(0, 0, 0, 0.9);
+  --shadow-card: 0 30px 80px -44px rgba(0, 0, 0, 1);
+  --glow-gold: 0 0 30px rgba(249, 207, 107, 0.22);
+
+  /* Радиусы */
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  /* Метрики */
+  --header-h: 68px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Тайминги */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-page: 240ms;
+}
+
+/* Тёплая ночь для Колобка: тот же интерфейс, другой берег. */
+[data-character='kolobok'] {
+  --scene-top: #0a0603;
+  --scene-deep: #140d06;
+  --scene-mid: #261806;
+  --scene-soft: #3a260f;
+  --scene-glow: rgba(190, 118, 32, 0.34);
+  --scene-aqua: rgba(255, 196, 120, 0.1);
+  --wave-1: #33200a;
+  --wave-2: #4a2e0c;
+  --wave-crest: rgba(255, 206, 138, 0.18);
+  --star: #ffe9c7;
+  --stroke-gold: rgba(255, 206, 138, 0.34);
+  --glow-gold: 0 0 30px rgba(255, 206, 138, 0.22);
+}

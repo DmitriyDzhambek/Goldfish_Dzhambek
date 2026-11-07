@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru" data-character="fish">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#02040c" />
+    <meta
+      name="description"
+      content="Золотая рыбка — бесплатный и безлимитный ИИ-ассистент: превращает желание в план из шагов и помогает дойти до конца."
+    />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Золотая рыбка" />
+    <meta
+      property="og:description"
+      content="Невод → желание → исполнение. Бесплатно, без регистрации и без счётчика желаний."
+    />
+    <meta property="og:locale" content="ru_RU" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Рыбка" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/icon.svg" />
+
+    <title>Золотая рыбка — желания, которые исполняются</title>
+
+    <script>
+      // Тема выбирается до первой отрисовки, чтобы не было вспышки.
+      try {
+        var character = localStorage.getItem('zr:character')
+        document.documentElement.dataset.character = character === 'kolobok' ? 'kolobok' : 'fish'
+      } catch (error) {
+        document.documentElement.dataset.character = 'fish'
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Для «Золотой рыбки» нужен включённый JavaScript.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+.root {
+  position: relative;
+  width: min(100%, 430px);
+  aspect-ratio: 3 / 2;
+}
+
+.svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 22px 38px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 26px rgba(255, 200, 120, 0.16));
+}
+
+.aura {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 202, 124, 0.22),
+    rgba(255, 202, 124, 0.06) 48%,
+    transparent 72%
+  );
+  filter: blur(18px);
+  animation: kbAura 8s ease-in-out infinite alternate;
+}
+
+.bun {
+  transform-box: view-box;
+  transform-origin: 182px 124px;
+  animation: kbFloat 7s ease-in-out infinite alternate;
+}
+
+.eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kbBlink 6.4s ease-in-out infinite;
+}
+
+@keyframes kbFloat {
+  from {
+    transform: translate3d(-4px, 3px, 0) rotate(-0.8deg);
+  }
+  to {
+    transform: translate3d(5px, -5px, 0) rotate(1deg);
+  }
+}
+
+@keyframes kbAura {
+  from {
+    transform: translate(-50%, -50%) scale(0.97);
+    opacity: 0.72;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes kbBlink {
+  0%,
+  91% {
+    transform: scaleY(1);
+  }
+  93.5% {
+    transform: scaleY(0.1);
+  }
+  96%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bun,
+  .aura,
+  .eye {
+    animation: none !important;
+  }
+}
