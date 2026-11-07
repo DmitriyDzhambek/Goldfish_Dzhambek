@@ -7,10 +7,12 @@ import {
   SendHorizontal,
   Sparkles,
   Square,
+  Target,
   Volume2,
   VolumeX,
   Waves,
 } from 'lucide-react'
+import type { Wish } from '../api/client'
 import { CHARACTERS, type CharacterId } from '../characters'
 import { MessageBubble } from '../components/chat/MessageBubble'
 import { Goldfish, type GoldfishMood } from '../components/scene/Goldfish'
@@ -33,11 +35,22 @@ const CHIPS = ['∞ сообщений', 'без регистрации', 'го�
 
 interface ChatPageProps {
   character: CharacterId
+  /** Желания для селектора контекста. */
+  wishes?: Wish[]
+  /** Желание, выбранное в селекторе на уровне App. */
+  wishId?: string | null
+  onWishChange?: (wishId: string | null) => void
 }
 
-export function ChatPage({ character }: ChatPageProps) {
+export function ChatPage({
+  character,
+  wishes = [],
+  wishId = null,
+  onWishChange,
+}: ChatPageProps) {
   const reducedMotion = useReducedMotion()
   const meta = CHARACTERS[character]
+  const activeWish = wishId ? wishes.find((wish) => wish.id === wishId) ?? null : null
 
   const [draft, setDraft] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
@@ -85,7 +98,11 @@ export function ChatPage({ character }: ChatPageProps) {
     stop,
     reset,
     clearError: clearAgentError,
-  } = useGoldfishAgent({ character, onAssistantDone: handleAssistantDone })
+  } = useGoldfishAgent({
+    character,
+    wishId: activeWish?.id ?? null,
+    onAssistantDone: handleAssistantDone,
+  })
 
   useEffect(() => {
     const textarea = textareaRef.current
@@ -308,6 +325,34 @@ export function ChatPage({ character }: ChatPageProps) {
         )}
 
         <form className={styles.composer} onSubmit={submit}>
+          {wishes.length > 0 && (
+            <div className={styles.context}>
+              <label className={styles.contextLabel} htmlFor="chat-wish">
+                <Target size={12} strokeWidth={2} aria-hidden="true" />
+                Желание в фокусе
+              </label>
+              <select
+                id="chat-wish"
+                className={styles.contextSelect}
+                value={activeWish?.id ?? ''}
+                onChange={(event) => onWishChange?.(event.target.value || null)}
+                disabled={busy}
+                title={
+                  activeWish
+                    ? `${activeWish.title} · ${activeWish.progress}%`
+                    : 'Рыбка ответит без привязки к желанию'
+                }
+              >
+                <option value="">Без желания</option>
+                {wishes.map((wish) => (
+                  <option key={wish.id} value={wish.id}>
+                    {wish.title} · {wish.progress}%
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {(listening || interim) && (
             <p className={styles.interim} aria-live="polite">
               {interim || 'Слушаю… говори'}

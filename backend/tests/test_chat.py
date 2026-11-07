@@ -5,7 +5,12 @@ from dataclasses import replace
 
 from fastapi.testclient import TestClient
 
-from backend.chat_history import MAX_HISTORY_MESSAGES, trim_turns
+from backend.chat_history import (
+    MAX_HISTORY_MESSAGES,
+    ChatHistory,
+    summarize_turns,
+    trim_turns,
+)
 from backend.config import get_settings
 from backend.providers import build_provider_chain, chunk_text, offline_reply
 from backend.ratelimit import SlidingWindowLimiter
@@ -48,6 +53,40 @@ def test_history_trim_respects_total_length() -> None:
 
     assert len(trimmed) <= 16
     assert sum(len(turn["content"]) for turn in trimmed) <= 16_000
+
+
+def test_history_is_summarized_when_trimmed() -> None:
+    history = ChatHistory()
+
+    for index in range(MAX_HISTORY_MESSAGES // 2 + 4):
+        history.append("summary-session", "user", f"вопрос номер {index} про цель")
+        history.append("summary-session", "assistant", f"ответ номер {index}")
+
+    kept = history.get("summary-session")
+    summary = history.get_summary("summary-session")
+
+    assert len(kept) == MAX_HISTORY_MESSAGES
+    assert "вопрос номер 0" not in kept[0]["content"]
+    assert "Пользователь:" in summary
+    assert "вопрос номер 0" in summary
+    assert len(summary) <= 1800
+
+    # Следующее сжатие не теряет прежнюю выжимку.
+    history.append("summary-session", "user", "ещё один вопрос")
+    assert "вопрос номер 0" in history.get_summary("summary-session")
+
+
+def test_summarize_turns_keeps_last_lines() -> None:
+    turns = [
+        {"role": "user" if index % 2 == 0 else "assistant", "content": f"строка {index}", "at": ""}
+        for index in range(40)
+    ]
+
+    summary = summarize_turns(turns)  # type: ignore[arg-type]
+
+    assert "строка 39" in summary
+    assert "строка 0" not in summary
+    assert len(summary.splitlines()) <= 12
 
 
 def test_offline_reply_is_chunked_without_losing_text() -> None:

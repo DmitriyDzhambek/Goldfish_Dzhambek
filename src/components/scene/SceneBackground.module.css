@@ -250,3 +250,62 @@
     height: clamp(150px, 30vh, 260px);
   }
 }
+
+/* ── Магия размышления: волны вспыхивают золотом, пока рыбка думает ── */
+
+.thinkingAura {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(240px, 46vh, 480px);
+  background:
+    radial-gradient(
+      120% 90% at 50% 100%,
+      rgba(255, 215, 0, 0.22),
+      rgba(255, 215, 0, 0.06) 46%,
+      transparent 74%
+    ),
+    linear-gradient(180deg, transparent, rgba(255, 215, 0, 0.05) 55%, rgba(255, 215, 0, 0.12));
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s var(--ease-soft);
+}
+
+.wave path {
+  transition: stroke 1.2s var(--ease-soft);
+}
+
+.glow,
+.caustics,
+.waveFront {
+  transition: opacity 1.2s var(--ease-soft), filter 1.2s var(--ease-soft);
+}
+
+:global(html[data-thinking='true']) .thinkingAura {
+  opacity: 1;
+}
+
+:global(html[data-thinking='true']) .glow {
+  filter: brightness(2.1) saturate(1.3);
+}
+
+:global(html[data-thinking='true']) .caustics {
+  filter: blur(12px) brightness(1.55) saturate(1.25);
+}
+
+:global(html[data-thinking='true']) .waveFront {
+  filter: drop-shadow(0 -12px 34px rgba(255, 215, 0, 0.22));
+}
+
+/* Гребень волны становится золотым на время размышления */
+:global(html[data-thinking='true']) .scene {
+  --wave-crest: rgba(255, 215, 0, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thinkingAura {
+    transition: none;
+  }
+}

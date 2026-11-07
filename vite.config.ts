@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -7,9 +8,10 @@ import react from '@vitejs/plugin-react'
  * VITE_API_BASE_URL указывает на задеплоенный бэкенд.
  */
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
-    port: 5173,
+    port: 5500,
+    strictPort: true,
     proxy: {
       '/api': {
         target: process.env.VITE_PROXY_TARGET ?? 'http://127.0.0.1:8000',

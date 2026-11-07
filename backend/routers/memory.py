@@ -1,23 +1,30 @@
-"""Память пользователя. Чтение и замена снимка фактов."""
+"""Память пользователя: чтение, замена и удаление снимка фактов."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Response
 
-from backend.errors import ApiError
-from backend.schemas import ErrorResponse, MemorySnapshot, MemoryUpdate
+from backend.auth import get_owner_id
+from backend.memory import clear_memory, read_memory, write_memory
+from backend.schemas import MemorySnapshot, MemoryUpdate
 
 router = APIRouter(prefix="/memory", tags=["memory"])
 
-_NOT_READY = "Память появится на этапе 4: факты, сжатие и использование в промте."
-_ERRORS = {501: {"model": ErrorResponse, "description": "Ещё не реализовано"}}
+
+@router.get("", response_model=MemorySnapshot, summary="Факты о пользователе")
+async def get_memory(owner_id: str = Depends(get_owner_id)) -> MemorySnapshot:
+    return read_memory(owner_id)
 
 
-@router.get("", response_model=MemorySnapshot, responses=_ERRORS, summary="Факты о пользователе")
-async def get_memory() -> MemorySnapshot:
-    raise ApiError(501, "not_implemented", _NOT_READY)
+@router.put("", response_model=MemorySnapshot, summary="Заменить факты")
+async def put_memory(
+    payload: MemoryUpdate,
+    owner_id: str = Depends(get_owner_id),
+) -> MemorySnapshot:
+    return write_memory(owner_id, payload.facts)
 
 
-@router.put("", response_model=MemorySnapshot, responses=_ERRORS, summary="Заменить факты")
-async def put_memory(_: MemoryUpdate) -> MemorySnapshot:
-    raise ApiError(501, "not_implemented", _NOT_READY)
+@router.delete("", status_code=204, summary="Забыть всё")
+async def delete_memory(owner_id: str = Depends(get_owner_id)) -> Response:
+    clear_memory(owner_id)
+    return Response(status_code=204)

@@ -17,16 +17,19 @@ import json
 import logging
 from collections.abc import AsyncIterator
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 
+from backend.auth import get_owner_id
 from backend.chat_history import ChatHistory
 from backend.config import get_settings
 from backend.errors import ApiError
 from backend.llm import build_messages, build_system_prompt
+from backend.memory import facts_to_prompt, read_memory, remember_from_message, user_name_from_facts
 from backend.providers import stream_with_fallback
 from backend.ratelimit import get_limiter
-from backend.schemas import ChatRequest, ErrorResponse
+from backend.schemas import ChatRequest, ErrorResponse, Wish
+from backend.wishes import get_wish
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +42,18 @@ def _sse(payload: dict[str, object]) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False, separators=(',', ':'))}\n\n"
 
 
+def _wish_context(wish: Wish) -> str:
+    done = sum(1 for step in wish.steps if step.done)
+    steps = " | ".join(
+        f"{'готово' if step.done else 'шаг'}: {step.title}" for step in wish.steps[:7]
+    )
+    note = f" Заметка: {wish.note}." if wish.note else ""
+    return (
+        f"Текущее желание: «{wish.title}». Прогресс {wish.progress}% "
+        f"({done} из {len(wish.steps)} шагов).{note} Шаги: {steps or 'пока нет'}."
+    )
+
+
 @router.post(
     "",
     summary="Потоковый ответ рыбки (SSE)",
@@ -48,7 +63,11 @@ def _sse(payload: dict[str, object]) -> str:
         429: {"model": ErrorResponse, "description": "Слишком много запросов"},
     },
 )
-async def chat(payload: ChatRequest, request: Request) -> StreamingResponse:
+async def chat(
+    payload: ChatRequest,
+    request: Request,
+    owner_id: str = Depends(get_owner_id),
+) -> StreamingResponse:
     client_key = request.client.host if request.client else "unknown"
     if not get_limiter().allow(client_key):
         raise ApiError(429, "rate_limited", _RATE_LIMIT_MESSAGE)
@@ -56,10 +75,39 @@ async def chat(payload: ChatRequest, request: Request) -> StreamingResponse:
     settings = get_settings()
     history = ChatHistory()
 
+    # Память пополняется прямо из реплики — без отдельного запроса и без LLM.
+    # Дневниковые записи — личное: память не пополняем.
+    if payload.mode != "diary":
+        try:
+            remember_from_message(owner_id, payload.message)
+        except Exception:  # noqa: BLE001 - память не должна ронять диалог
+            logger.exception("Не удалось обновить память")
+
+    snapshot = read_memory(owner_id)
+    context: list[str] = []
+
+    if payload.wish_id:
+        try:
+            wish = get_wish(owner_id, payload.wish_id)
+        except Exception:  # noqa: BLE001 - битый wishId не должен ронять чат
+            wish = None
+        if wish is not None:
+            context.append(_wish_context(wish))
+
     previous = history.get(payload.session_id)
     history.append(payload.session_id, "user", payload.message)
 
-    system_prompt = build_system_prompt(character=payload.character)
+    summary = history.get_summary(payload.session_id)
+    if summary:
+        context.append(f"Сжатая история диалога: {summary.replace(chr(10), ' | ')}")
+
+    system_prompt = build_system_prompt(
+        character=payload.character,
+        user_name=user_name_from_facts(snapshot.facts),
+        facts=facts_to_prompt(snapshot.facts),
+        context=context,
+        diary=payload.mode == "diary",
+    )
     messages = build_messages(
         system_prompt=system_prompt,
         history=previous,

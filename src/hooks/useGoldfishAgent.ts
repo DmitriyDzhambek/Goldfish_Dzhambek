@@ -89,6 +89,8 @@ function errorMessage(error: unknown): string {
 
 export interface UseGoldfishAgentOptions {
   character: CharacterId
+  /** Желание, к которому относится диалог: его план попадёт в контекст. */
+  wishId?: string | null
   onAssistantDone?: (text: string, message: ChatMessage) => void
 }
 
@@ -111,6 +113,7 @@ export interface GoldfishAgent {
  */
 export function useGoldfishAgent({
   character,
+  wishId = null,
   onAssistantDone,
 }: UseGoldfishAgentOptions): GoldfishAgent {
   const initial = useRef<StoredChat | null>(null)
@@ -191,6 +194,7 @@ export function useGoldfishAgent({
             sessionId: sessionRef.current,
             message: text,
             character,
+            ...(wishId ? { wishId } : {}),
           },
           controller.signal,
         )) {
@@ -289,7 +293,7 @@ export function useGoldfishAgent({
         if (!finished && controller.signal.aborted) setStatus('idle')
       }
     },
-    [character, commit, patchMessage],
+    [character, commit, patchMessage, wishId],
   )
 
   const stop = useCallback((): void => {

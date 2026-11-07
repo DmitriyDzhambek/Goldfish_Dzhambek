@@ -225,6 +225,15 @@
   border-top: 1px solid var(--stroke-soft);
 }
 
+.footActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.discuss,
 .replan {
   display: inline-flex;
   align-items: center;
@@ -238,9 +247,14 @@
     background-color 0.2s var(--ease-out);
 }
 
+.discuss:hover,
 .replan:hover:not(:disabled) {
   color: var(--gold-200);
   background: rgba(255, 255, 255, 0.05);
+}
+
+.discuss {
+  color: var(--gold-200);
 }
 
 .replan:disabled {

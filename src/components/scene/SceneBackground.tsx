@@ -115,6 +115,9 @@ export function SceneBackground({ quality }: SceneBackgroundProps) {
         <Wave className={styles.waveFront} />
       </div>
 
+      {/* Золотая аура размышления: оживает, когда <html> получает data-thinking */}
+      <div className={styles.thinkingAura} />
+
       <div className={styles.noise} />
     </div>
   )

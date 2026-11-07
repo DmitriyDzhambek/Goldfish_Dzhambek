@@ -1,14 +1,15 @@
-"""Желания: CRUD, план из шагов и прогресс.
+﻿"""Желания: CRUD, план из шагов и прогресс.
 
-Данные изолированы по гостю (`X-Guest-Id`). Регистрация не требуется.
+Данные изолированы по владельцу: для гостя это `X-Guest-Id`, после входа —
+аккаунт. Регистрация не требуется.
 """
 
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Response
 
+from backend.auth import get_owner_id
 from backend.errors import ApiError
-from backend.guest import get_guest_id
 from backend.schemas import (
     ErrorResponse,
     Wish,
@@ -32,9 +33,9 @@ _NOT_FOUND = "Желание не найдено. Возможно, оно уж�
 _ERRORS = {404: {"model": ErrorResponse, "description": "Желание не найдено"}}
 
 
-@router.get("", response_model=WishList, summary="Список желаний гостя")
-async def list_wishes_endpoint(guest_id: str = Depends(get_guest_id)) -> WishList:
-    return WishList(wishes=list_wishes(guest_id))
+@router.get("", response_model=WishList, summary="Список желаний")
+async def list_wishes_endpoint(owner_id: str = Depends(get_owner_id)) -> WishList:
+    return WishList(wishes=list_wishes(owner_id))
 
 
 @router.post(
@@ -45,11 +46,11 @@ async def list_wishes_endpoint(guest_id: str = Depends(get_guest_id)) -> WishLis
 )
 async def create_wish_endpoint(
     payload: WishCreate,
-    guest_id: str = Depends(get_guest_id),
+    owner_id: str = Depends(get_owner_id),
 ) -> Wish:
     steps = await build_plan(payload.title, payload.note)
     wish = new_wish(payload.title, payload.note, steps)
-    return save_wish(guest_id, wish)
+    return save_wish(owner_id, wish)
 
 
 @router.patch(
@@ -61,9 +62,9 @@ async def create_wish_endpoint(
 async def update_wish_endpoint(
     wish_id: str,
     payload: WishUpdate,
-    guest_id: str = Depends(get_guest_id),
+    owner_id: str = Depends(get_owner_id),
 ) -> Wish:
-    updated = update_wish(guest_id, wish_id, payload)
+    updated = update_wish(owner_id, wish_id, payload)
     if updated is None:
         raise ApiError(404, "wish_not_found", _NOT_FOUND)
     return updated
@@ -77,9 +78,9 @@ async def update_wish_endpoint(
 )
 async def regenerate_plan_endpoint(
     wish_id: str,
-    guest_id: str = Depends(get_guest_id),
+    owner_id: str = Depends(get_owner_id),
 ) -> Wish:
-    updated = await regenerate_plan(guest_id, wish_id)
+    updated = await regenerate_plan(owner_id, wish_id)
     if updated is None:
         raise ApiError(404, "wish_not_found", _NOT_FOUND)
     return updated
@@ -93,8 +94,8 @@ async def regenerate_plan_endpoint(
 )
 async def delete_wish_endpoint(
     wish_id: str,
-    guest_id: str = Depends(get_guest_id),
+    owner_id: str = Depends(get_owner_id),
 ) -> Response:
-    if not delete_wish(guest_id, wish_id):
+    if not delete_wish(owner_id, wish_id):
         raise ApiError(404, "wish_not_found", _NOT_FOUND)
     return Response(status_code=204)

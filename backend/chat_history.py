@@ -2,10 +2,15 @@
 
 Храним только роль, текст и время. Историю обрезаем по количеству сообщений
 и по суммарной длине, чтобы промт не разрастался бесконечно.
+
+Когда старые реплики выпадают из окна, из них собирается короткая выжимка.
+Она не даёт рыбке «забыть» имя, цель или договорённости после длинного
+разговора — и при этом не раздувает каждый запрос.
 """
 
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from threading import Lock
 from typing import Literal, TypedDict
@@ -17,6 +22,13 @@ ChatRole = Literal["user", "assistant"]
 
 MAX_HISTORY_MESSAGES = 24
 MAX_HISTORY_CHARS = 16_000
+MAX_SUMMARY_CHARS = 1800
+MAX_SUMMARY_LINE = 180
+MAX_SUMMARY_LINES = 12
+
+CHATS_KEY = "chats"
+SUMMARIES_KEY = "chat_summaries"
+_SPACES = re.compile(r"\s+")
 
 
 class StoredTurn(TypedDict):
@@ -54,8 +66,24 @@ def trim_turns(turns: list[StoredTurn]) -> list[StoredTurn]:
     return kept
 
 
+def summarize_turns(turns: list[StoredTurn], previous: str = "") -> str:
+    """Сжимает выпавшие реплики в несколько коротких строк."""
+    lines: list[str] = []
+
+    for turn in turns[-MAX_SUMMARY_LINES:]:
+        text = _SPACES.sub(" ", turn["content"]).strip()
+        if not text:
+            continue
+        speaker = "Пользователь" if turn["role"] == "user" else "Рыбка"
+        lines.append(f"{speaker}: {text[:MAX_SUMMARY_LINE]}")
+
+    fresh = "\n".join(lines).strip()
+    combined = f"{previous.strip()}\n{fresh}".strip() if previous.strip() else fresh
+    return combined[-MAX_SUMMARY_CHARS:]
+
+
 class ChatHistory:
-    """Потокобезопасная история поверх JsonStore."""
+    """Потокобезопасная история и выжимка поверх JsonStore."""
 
     def __init__(self, store: JsonStore | None = None) -> None:
         self._store = store or get_store()
@@ -67,27 +95,64 @@ class ChatHistory:
 
         return [{"role": turn["role"], "content": turn["content"]} for turn in turns]
 
+    def get_summary(self, session_id: str) -> str:
+        with self._lock:
+            data = self._store.read()
+            summaries = data.get(SUMMARIES_KEY)
+            if not isinstance(summaries, dict):
+                return ""
+
+            raw = summaries.get(session_id)
+            if not isinstance(raw, dict):
+                return ""
+            return str(raw.get("text") or "")[:MAX_SUMMARY_CHARS]
+
     def append(self, session_id: str, role: ChatRole, content: str) -> None:
         if not content:
             return
 
         with self._lock:
             data = self._store.read()
-            chats = data.get("chats")
+            chats = data.get(CHATS_KEY)
             if not isinstance(chats, dict):
                 chats = {}
-                data["chats"] = chats
+                data[CHATS_KEY] = chats
 
-            turns = self._read_turns(session_id, data)
-            turns.append({"role": role, "content": content, "at": _now()})
-            chats[session_id] = trim_turns(turns)
+            raw_turns = self._read_raw_turns(session_id, data)
+            raw_turns.append({"role": role, "content": content, "at": _now()})
+
+            kept = trim_turns(raw_turns)
+            chats[session_id] = kept
+
+            removed = raw_turns[: len(raw_turns) - len(kept)]
+            if removed:
+                summaries = data.get(SUMMARIES_KEY)
+                if not isinstance(summaries, dict):
+                    summaries = {}
+                    data[SUMMARIES_KEY] = summaries
+
+                previous = ""
+                old = summaries.get(session_id)
+                if isinstance(old, dict):
+                    previous = str(old.get("text") or "")
+
+                summaries[session_id] = {
+                    "text": summarize_turns(removed, previous),
+                    "updatedAt": _now(),
+                }
+
             self._store.write(data)
 
     def _read_turns(
         self, session_id: str, data: dict[str, object] | None = None
     ) -> list[StoredTurn]:
+        return trim_turns(self._read_raw_turns(session_id, data))
+
+    def _read_raw_turns(
+        self, session_id: str, data: dict[str, object] | None = None
+    ) -> list[StoredTurn]:
         source = data if data is not None else self._store.read()
-        chats = source.get("chats")
+        chats = source.get(CHATS_KEY)
         if not isinstance(chats, dict):
             return []
 
@@ -106,4 +171,4 @@ class ChatHistory:
                     }
                 )
 
-        return trim_turns(turns)
+        return turns

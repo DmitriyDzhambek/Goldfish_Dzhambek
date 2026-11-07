@@ -1,0 +1,96 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mic {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-pill);
+  background: var(--glass);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition:
+    color var(--dur-page) var(--ease-soft),
+    border-color var(--dur-page) var(--ease-soft),
+    box-shadow var(--dur-page) var(--ease-soft);
+}
+
+.mic:hover {
+  color: var(--gold-200);
+  border-color: var(--stroke-gold);
+}
+
+.mic:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.micOff {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: var(--text-mute);
+}
+
+.listening {
+  color: var(--gold-300);
+  border-color: var(--stroke-gold);
+  box-shadow: var(--glow-gold);
+}
+
+/* Спокойная золотая пульсация вместо стандартного спиннера. */
+.pulse {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid var(--stroke-gold);
+  animation: mic-pulse 1.8s var(--ease-soft) infinite;
+  pointer-events: none;
+}
+
+@keyframes mic-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+.interim,
+.hint {
+  position: absolute;
+  right: calc(100% + 10px);
+  max-width: 220px;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.interim {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.hint {
+  color: var(--danger-200);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}

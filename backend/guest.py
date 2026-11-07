@@ -17,6 +17,10 @@ DEFAULT_GUEST = "guest-default"
 _GUEST_RE = re.compile(r"^[A-Za-z0-9_-]{8,128}$")
 
 
+def is_valid_guest_id(value: str | None) -> bool:
+    return bool(value and _GUEST_RE.fullmatch(value.strip()))
+
+
 def get_guest_id(request: Request) -> str:
     """Возвращает безопасный идентификатор гостя или общий fallback."""
     raw = request.headers.get(GUEST_HEADER, "").strip()

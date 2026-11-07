@@ -342,6 +342,69 @@
   background: linear-gradient(180deg, rgba(4, 9, 22, 0.2), rgba(4, 9, 22, 0.55));
 }
 
+.context {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 0 4px 1px;
+}
+
+.contextLabel {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: 4px;
+  color: var(--text-mute);
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+.contextLabel svg {
+  color: var(--gold-300);
+}
+
+.contextSelect {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 26px 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--stroke-soft);
+  background-color: rgba(0, 0, 0, 0.22);
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-mute) 50%),
+    linear-gradient(135deg, var(--text-mute) 50%, transparent 50%);
+  background-position:
+    calc(100% - 12px) 11px,
+    calc(100% - 8px) 11px;
+  background-size: 4px 4px;
+  background-repeat: no-repeat;
+  color: var(--text-dim);
+  font-size: 0.6875rem;
+  text-overflow: ellipsis;
+  outline: none;
+  appearance: none;
+  transition:
+    border-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out);
+}
+
+.contextSelect:hover:not(:disabled),
+.contextSelect:focus {
+  border-color: var(--stroke-gold);
+  color: var(--text);
+}
+
+.contextSelect:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.contextSelect option {
+  background: #071026;
+  color: var(--text);
+}
+
 .interim {
   padding: 0 6px;
   color: var(--aqua-200);

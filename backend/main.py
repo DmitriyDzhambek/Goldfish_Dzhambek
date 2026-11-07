@@ -18,9 +18,9 @@ from backend.errors import (
     http_error_handler,
     validation_error_handler,
 )
-from backend.routers import auth, chat, memory, wishes
+from backend.routers import auth, chat, memory, vibecoding, wishes
 
-APP_VERSION = "0.3.0"
+APP_VERSION = "0.4.0"
 
 
 def create_app() -> FastAPI:
@@ -53,6 +53,7 @@ def create_app() -> FastAPI:
     app.include_router(chat.router, prefix="/api")
     app.include_router(wishes.router, prefix="/api")
     app.include_router(memory.router, prefix="/api")
+    app.include_router(vibecoding.router, prefix="/api")
     app.include_router(auth.router, prefix="/api")
 
     @app.get("/api/health", tags=["system"], summary="Живо ли море")

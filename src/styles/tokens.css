@@ -11,17 +11,17 @@
   --font-display: Georgia, 'PT Serif', 'Times New Roman', serif;
   --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
 
-  /* Базовые поверхности */
-  --bg-abyss: #02040c;
-  --bg-deep: #050b1c;
-  --bg-mid: #0a1634;
-  --bg-soft: #141c46;
+  /* Базовые поверхности — глубокий космос */
+  --bg-abyss: #0a0e17;
+  --bg-deep: #0e1526;
+  --bg-mid: #141d33;
+  --bg-soft: #1b2742;
 
   /* Сцена: переопределяются для персонажа «Колобок» */
-  --scene-top: #02040c;
-  --scene-deep: #050b1c;
-  --scene-mid: #0a1634;
-  --scene-soft: #141c46;
+  --scene-top: #0a0e17;
+  --scene-deep: #0e1526;
+  --scene-mid: #141d33;
+  --scene-soft: #1b2742;
   --scene-glow: rgba(64, 92, 190, 0.42);
   --scene-aqua: rgba(95, 224, 204, 0.12);
   --wave-1: #0a1a3f;
@@ -29,19 +29,19 @@
   --wave-crest: rgba(249, 207, 107, 0.16);
   --star: #e9f3ff;
 
-  /* Золото */
-  --gold-100: #fff6d9;
-  --gold-200: #ffe9ab;
-  --gold-300: #f9cf6b;
-  --gold-400: #f0b94b;
-  --gold-500: #d99a2b;
-  --gold-600: #b87a18;
-  --gold-700: #8a5a12;
+  /* Золото — акцент #FFD700 */
+  --gold-100: #fff9e0;
+  --gold-200: #ffe55c;
+  --gold-300: #ffd700;
+  --gold-400: #eac300;
+  --gold-500: #c7a500;
+  --gold-600: #a38500;
+  --gold-700: #7a6300;
 
-  /* Бирюза */
-  --aqua-200: #c3fff6;
-  --aqua-400: #5fe0cc;
-  --aqua-600: #1f9b8c;
+  /* Бирюза — акцент #00FFFF */
+  --aqua-200: #b3ffff;
+  --aqua-400: #00ffff;
+  --aqua-600: #00b3b3;
 
   /* Ошибки и предупреждения */
   --danger-200: #ffb3a3;
@@ -49,10 +49,10 @@
   --danger-soft: rgba(255, 107, 87, 0.12);
   --danger-stroke: rgba(255, 145, 124, 0.45);
 
-  /* Текст */
-  --text: #f7f3e8;
-  --text-dim: #b9c3dc;
-  --text-mute: #808cab;
+  /* Текст — чистый белый и полупрозрачный серый */
+  --text: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.64);
+  --text-mute: rgba(255, 255, 255, 0.4);
 
   /* Стекло */
   --glass: rgba(255, 255, 255, 0.055);

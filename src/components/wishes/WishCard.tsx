@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, RotateCw, Sparkles, Trash2, X } from 'lucide-react'
+import { Check, MessageCircle, RotateCw, Sparkles, Trash2, X } from 'lucide-react'
 import type { Wish, WishStatus } from '../../api/client'
 import styles from './WishCard.module.css'
 
@@ -15,9 +15,17 @@ interface WishCardProps {
   onToggleStep: (stepId: string) => void
   onReplan: () => void
   onDelete: () => void
+  onDiscuss: () => void
 }
 
-export function WishCard({ wish, busy, onToggleStep, onReplan, onDelete }: WishCardProps) {
+export function WishCard({
+  wish,
+  busy,
+  onToggleStep,
+  onReplan,
+  onDelete,
+  onDiscuss,
+}: WishCardProps) {
   const [confirming, setConfirming] = useState(false)
   const done = wish.status === 'done'
 
@@ -106,16 +114,28 @@ export function WishCard({ wish, busy, onToggleStep, onReplan, onDelete }: WishC
       </ul>
 
       <footer className={styles.foot}>
-        <button
-          type="button"
-          className={styles.replan}
-          onClick={onReplan}
-          disabled={busy}
-          title="Составить новый план из шагов"
-        >
-          <RotateCw size={13} strokeWidth={2} aria-hidden="true" />
-          Перепланировать
-        </button>
+        <div className={styles.footActions}>
+          <button
+            type="button"
+            className={styles.discuss}
+            onClick={onDiscuss}
+            title="Открыть чат с планом этого желания"
+          >
+            <MessageCircle size={13} strokeWidth={2} aria-hidden="true" />
+            Обсудить с рыбкой
+          </button>
+
+          <button
+            type="button"
+            className={styles.replan}
+            onClick={onReplan}
+            disabled={busy}
+            title="Составить новый план из шагов"
+          >
+            <RotateCw size={13} strokeWidth={2} aria-hidden="true" />
+            Перепланировать
+          </button>
+        </div>
 
         {done && (
           <p className={styles.congrats} role="status">

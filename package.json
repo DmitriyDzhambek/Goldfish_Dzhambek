@@ -1,7 +1,7 @@
 {
   "name": "zolotaya-rybka",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "Золотая рыбка — бесплатный ИИ-ассистент, который превращает желания в план и доводит дела до конца",
   "license": "MIT",
@@ -14,10 +14,12 @@
     "test:backend": "python -m pytest backend/tests -q"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.5",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.469.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",

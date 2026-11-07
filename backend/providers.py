@@ -118,6 +118,8 @@ def _extract_delta(raw: str) -> str | None:
 async def stream_provider(
     provider: Provider,
     messages: Sequence[ChatMessage],
+    *,
+    temperature: float = 0.8,
 ) -> AsyncIterator[str]:
     """Стримит текст от одного OpenAI-совместимого провайдера."""
     headers = {"Accept": "text/event-stream"}
@@ -128,7 +130,7 @@ async def stream_provider(
         "model": provider.model,
         "messages": list(messages),
         "stream": True,
-        "temperature": 0.8,
+        "temperature": temperature,
     }
 
     try:
@@ -200,6 +202,7 @@ async def complete_text(
     messages: Sequence[ChatMessage],
     *,
     settings: Settings,
+    temperature: float = 0.8,
 ) -> tuple[str, ProviderName | None]:
     """Нестриминговый ответ для служебных задач (например, план желания).
 
@@ -211,7 +214,7 @@ async def complete_text(
         chunks: list[str] = []
 
         try:
-            async for delta in stream_provider(provider, messages):
+            async for delta in stream_provider(provider, messages, temperature=temperature):
                 chunks.append(delta)
         except ProviderError:
             continue

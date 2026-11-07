@@ -58,6 +58,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   if (json !== undefined) requestHeaders.set('Content-Type', 'application/json')
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
+    credentials: 'include',
     ...init,
     headers: requestHeaders,
     ...(json === undefined ? {} : { body: JSON.stringify(json) }),
@@ -76,6 +77,8 @@ export interface ChatRequest {
   message: string
   character?: 'fish' | 'kolobok'
   wishId?: string
+  /** `diary` — краткий отклик Рыбки на запись дневника. */
+  mode?: 'chat' | 'diary'
 }
 
 export interface ChatStreamDelta {
@@ -128,6 +131,7 @@ export async function* streamChat(
 ): AsyncGenerator<ChatStreamEvent, void, void> {
   const response = await fetch(`${API_BASE_URL}/chat`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       Accept: 'text/event-stream',
       'Content-Type': 'application/json',
@@ -230,6 +234,72 @@ export interface MemoryResponse {
   updatedAt: string | null
 }
 
+/* ── Вайбкодинг ─────────────────────────────────────────────── */
+
+export type VibeMode = 'generate' | 'explain'
+export type VibeSource = 'folder' | 'github' | 'demo' | 'none'
+
+export interface VibeProjectFile {
+  path: string
+  content: string
+  language?: string | null
+}
+
+export interface VibeStep {
+  id: string
+  title: string
+  detail: string
+  files: string[]
+}
+
+export interface VibeChange {
+  path: string
+  language: string | null
+  code: string
+  explanation: string
+}
+
+export interface VibeResponse {
+  mode: VibeMode
+  summary: string
+  relevantFiles: string[]
+  steps: VibeStep[]
+  changes: VibeChange[]
+  warnings: string[]
+  provider: string | null
+}
+
+export interface VibeRequest {
+  task: string
+  mode: VibeMode
+  source: VibeSource
+  repo?: string
+  files: VibeProjectFile[]
+}
+
+/* ── Аккаунт ────────────────────────────────────────────────── */
+
+export interface Account {
+  id: string
+  name: string
+  email: string | null
+  avatarUrl: string | null
+  createdAt: string
+}
+
+export interface AuthMe {
+  authenticated: boolean
+  account: Account | null
+  oauthEnabled: boolean
+  provider: 'yandex'
+  guest: boolean
+}
+
+export interface TransferSummary {
+  wishes: number
+  facts: number
+}
+
 /* ── Публичный объект API ───────────────────────────────────── */
 
 export const api = {
@@ -248,5 +318,16 @@ export const api = {
     get: () => apiRequest<MemoryResponse>('/memory'),
     put: (facts: MemoryFact[]) =>
       apiRequest<MemoryResponse>('/memory', { method: 'PUT', json: { facts } }),
+    remove: () => apiRequest<void>('/memory', { method: 'DELETE' }),
+  },
+  vibecoding: {
+    analyze: (input: VibeRequest) =>
+      apiRequest<VibeResponse>('/vibecoding/analyze', { method: 'POST', json: input }),
+  },
+  auth: {
+    me: () => apiRequest<AuthMe>('/auth/me'),
+    logout: () => apiRequest<void>('/auth/logout', { method: 'POST' }),
+    yandexStartUrl: (guestId: string) =>
+      `${API_BASE_URL}/auth/yandex/start?guestId=${encodeURIComponent(guestId)}`,
   },
 } as const

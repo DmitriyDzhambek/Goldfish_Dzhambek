@@ -1,10 +1,11 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { AlertCircle, Loader2, Mic, Plus, RefreshCw, Sparkles } from 'lucide-react'
+import type { Wish } from '../api/client'
 import { CHARACTERS, type CharacterId } from '../characters'
 import { GlassCard } from '../components/ui/GlassCard'
 import { WishCard } from '../components/wishes/WishCard'
 import { useSpeech } from '../hooks/useSpeech'
-import { useWishes } from '../hooks/useWishes'
+import type { WishesController } from '../hooks/useWishes'
 import styles from './WishesPage.module.css'
 
 const MAX_TITLE = 280
@@ -19,9 +20,11 @@ const SUGGESTIONS = [
 
 interface WishesPageProps {
   character: CharacterId
+  controller: WishesController
+  onDiscuss: (wish: Wish) => void
 }
 
-export function WishesPage({ character }: WishesPageProps) {
+export function WishesPage({ character, controller, onDiscuss }: WishesPageProps) {
   const meta = CHARACTERS[character]
   const [draftTitle, setDraftTitle] = useState('')
   const [draftNote, setDraftNote] = useState('')
@@ -54,7 +57,7 @@ export function WishesPage({ character }: WishesPageProps) {
     replan,
     remove,
     clearError,
-  } = useWishes()
+  } = controller
 
   const doneCount = wishes.reduce(
     (count, wish) => (wish.status === 'done' ? count + 1 : count),
@@ -270,6 +273,7 @@ export function WishesPage({ character }: WishesPageProps) {
                   onToggleStep={(stepId) => void toggleStep(wish, stepId)}
                   onReplan={() => void replan(wish.id)}
                   onDelete={() => void remove(wish.id)}
+                  onDiscuss={() => onDiscuss(wish)}
                 />
               ))}
             </div>

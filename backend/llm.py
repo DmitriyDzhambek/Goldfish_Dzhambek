@@ -28,6 +28,14 @@ KOLOBOK_SYSTEM_PROMPT = (
     "Максимум 1-2 эмодзи на сообщение. Связывай ответы с продуктивностью и развитием."
 )
 
+DIARY_SYSTEM_PROMPT = (
+    "Ты — мудрая Золотая Рыбка. Пользователь ведёт дневник, ты читаешь его записи. "
+    "Если это личные переживания — поддержи его одной мудрой фразой. "
+    "Если это ИДЕЯ для проекта — предложи конкретный следующий шаг "
+    "(архитектуру, план или код), чтобы он мог продолжить. "
+    "Будь краток (до 3 предложений), ироничен, но полезен."
+)
+
 # Ограничение длины памяти в промте: больше фактов — дороже каждый запрос.
 MAX_PROMPT_FACTS = 40
 
@@ -42,9 +50,18 @@ def build_system_prompt(
     character: Character = "fish",
     user_name: str | None = None,
     facts: Sequence[str] = (),
+    context: Sequence[str] = (),
+    diary: bool = False,
 ) -> str:
-    """Собирает системный промт: характер + имя + память."""
-    base = GOLDFISH_SYSTEM_PROMPT if character == "fish" else KOLOBOK_SYSTEM_PROMPT
+    """Собирает системный промт: характер + имя + память + контекст.
+
+    `diary=True` — режим дневника: краткий отклик Рыбки на запись
+    вместо привычного диалога.
+    """
+    if diary:
+        base = DIARY_SYSTEM_PROMPT
+    else:
+        base = GOLDFISH_SYSTEM_PROMPT if character == "fish" else KOLOBOK_SYSTEM_PROMPT
 
     lines = [base]
     if user_name:
@@ -52,6 +69,9 @@ def build_system_prompt(
     if facts:
         lines.append("Что ты помнишь о пользователе (используй уместно, не пересказывай списком):")
         lines.extend(f"- {fact}" for fact in facts[:MAX_PROMPT_FACTS])
+    if context:
+        lines.append("Контекст текущего разговора (учитывай, но не цитируй целиком):")
+        lines.extend(f"- {line}" for line in context if line.strip())
 
     return "\n".join(lines)
 

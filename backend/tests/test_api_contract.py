@@ -45,20 +45,37 @@ def test_chat_rejects_unknown_character(client: TestClient) -> None:
     assert response.json()["error"]["code"] == "validation_error"
 
 
-def test_memory_stub(client: TestClient) -> None:
-    assert client.get("/api/memory").status_code == 501
+def test_memory_defaults_to_empty_snapshot(client: TestClient) -> None:
+    response = client.get(
+        "/api/memory",
+        headers={"X-Guest-Id": "contract-memory-01"},
+    )
 
-    updated = client.put("/api/memory", json={"facts": []})
-    assert updated.status_code == 501
+    assert response.status_code == 200
+    body = response.json()
+    assert body["facts"] == []
+    assert body["updatedAt"] is None
 
 
-def test_auth_stub_and_email_validation(client: TestClient) -> None:
-    accepted = client.post("/api/auth/request", json={"email": "me@example.com"})
-    assert accepted.status_code == 501
+def test_auth_me_reports_guest_and_oauth_state(client: TestClient) -> None:
+    response = client.get("/api/auth/me")
 
-    invalid = client.post("/api/auth/request", json={"email": "not-an-email"})
-    assert invalid.status_code == 422
-    assert invalid.json()["error"]["code"] == "validation_error"
+    assert response.status_code == 200
+    body = response.json()
+    assert body["authenticated"] is False
+    assert body["account"] is None
+    assert body["oauthEnabled"] is False
+    assert body["provider"] == "yandex"
+    assert body["guest"] is True
+
+
+def test_yandex_start_without_config_is_explained(client: TestClient) -> None:
+    response = client.get("/api/auth/yandex/start", follow_redirects=False)
+
+    assert response.status_code == 503
+    body = response.json()
+    assert body["error"]["code"] == "oauth_not_configured"
+    assert "YANDEX_CLIENT_ID" in body["error"]["message"]
 
 
 def test_unknown_route_is_json_error(client: TestClient) -> None:

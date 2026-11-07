@@ -1,0 +1,77 @@
+/* ─────────────────────────────────────────────────────────────
+   Tailwind 4 — тема «Джобсовский минимализм».
+   Палитра, шрифты и стекло живут здесь (@theme, без config-файла).
+   ───────────────────────────────────────────────────────────── */
+
+@import 'tailwindcss';
+
+@theme {
+  /* Фон — глубокий космос */
+  --color-abyss: #0a0e17;
+  --color-space-900: #0d1322;
+  --color-space-800: #111a2e;
+  --color-space-700: #18233c;
+
+  /* Акценты */
+  --color-gold: #ffd700;
+  --color-gold-soft: #ffe55c;
+  --color-gold-deep: #d9b400;
+  --color-aqua: #00ffff;
+  --color-aqua-soft: #7dffff;
+
+  /* Текст */
+  --color-ink: #ffffff;
+  --color-ink-dim: rgba(255, 255, 255, 0.62);
+  --color-ink-mute: rgba(255, 255, 255, 0.38);
+
+  /* Diff */
+  --color-diff-add: #1f6f3d;
+  --color-diff-add-bg: rgba(46, 160, 67, 0.16);
+  --color-diff-del: #a3382f;
+  --color-diff-del-bg: rgba(248, 81, 73, 0.14);
+
+  /* Типографика */
+  --font-display: Georgia, 'PT Serif', 'Times New Roman', serif;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Стеклянная поверхность: матовое стекло с тонкой границей */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+}
+
+@utility glass-strong {
+  background-color: rgb(255 255 255 / 0.09);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgb(255 255 255 / 0.14);
+}
+
+/* Едва заметная золотая волна — дышит, пока ИИ думает */
+@utility gold-pulse {
+  animation: gold-pulse 2.8s var(--ease-out-soft) infinite;
+}
+
+@keyframes gold-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateX(-30%) scaleX(0.8);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-pulse {
+    animation: none;
+  }
+}
