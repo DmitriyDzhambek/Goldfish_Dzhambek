@@ -43,6 +43,12 @@
   --aqua-400: #5fe0cc;
   --aqua-600: #1f9b8c;
 
+  /* Ошибки и предупреждения */
+  --danger-200: #ffb3a3;
+  --danger-400: #ff917c;
+  --danger-soft: rgba(255, 107, 87, 0.12);
+  --danger-stroke: rgba(255, 145, 124, 0.45);
+
   /* Текст */
   --text: #f7f3e8;
   --text-dim: #b9c3dc;

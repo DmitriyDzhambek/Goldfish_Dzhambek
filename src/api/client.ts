@@ -71,6 +71,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 export interface ChatRequest {
   sessionId: string
   message: string
+  character?: 'fish' | 'kolobok'
   wishId?: string
 }
 
@@ -78,15 +79,33 @@ export interface ChatStreamDelta {
   delta: string
 }
 
+export interface ChatStreamNotice {
+  notice: string
+}
+
+export type ChatProvider = 'primary' | 'fallback' | 'ollama' | 'offline'
+
 export interface ChatStreamDone {
   done: true
+  provider?: ChatProvider
   usage?: {
     promptTokens?: number
     completionTokens?: number
   }
 }
 
-export type ChatStreamEvent = ChatStreamDelta | ChatStreamDone
+export interface ChatStreamError {
+  error: {
+    code: string
+    message: string
+  }
+}
+
+export type ChatStreamEvent =
+  | ChatStreamDelta
+  | ChatStreamNotice
+  | ChatStreamDone
+  | ChatStreamError
 
 function parseEvent(raw: string): ChatStreamEvent {
   try {

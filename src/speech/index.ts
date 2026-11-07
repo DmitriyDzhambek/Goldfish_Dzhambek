@@ -35,3 +35,19 @@ export const GOLDFISH_VOICE = {
   pitch: 0.9,
   rate: 0.9,
 } as const
+
+/**
+ * Убирает markdown и эмодзи, чтобы синтезатор не читал «звёздочки» вслух.
+ * HTML здесь не используется — только текст.
+ */
+export function toPlainSpeech(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/[*_#>]/g, ' ')
+    .replace(/\p{Extended_Pictographic}/gu, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{2,}/g, '. ')
+    .replace(/\n/g, ' ')
+    .trim()
+}

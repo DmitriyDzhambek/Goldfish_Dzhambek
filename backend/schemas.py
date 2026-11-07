@@ -11,6 +11,8 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
+from backend.llm import Character
+
 WishStatus = Literal["new", "in_progress", "done"]
 MemoryKind = Literal["name", "goal", "habit", "date", "other"]
 
@@ -38,6 +40,7 @@ class ErrorResponse(ApiModel):
 class ChatRequest(ApiModel):
     session_id: str = Field(min_length=1, max_length=128)
     message: str = Field(min_length=1, max_length=8000)
+    character: Character = "fish"
     wish_id: str | None = Field(default=None, max_length=128)
 
 

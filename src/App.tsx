@@ -8,7 +8,7 @@ import { Bubbles } from './components/scene/Bubbles'
 import { SceneBackground } from './components/scene/SceneBackground'
 import { useSceneQuality } from './hooks/useSceneQuality'
 import { readStorage, writeStorage } from './lib/storage'
-import { HomeHero } from './pages/HomeHero'
+import { ChatPage } from './pages/ChatPage'
 import { StagePage } from './pages/StagePage'
 import styles from './App.module.css'
 
@@ -18,13 +18,13 @@ const EASE = [0.22, 0.61, 0.36, 1] as const
 function renderPage(tab: TabId, character: CharacterId) {
   switch (tab) {
     case 'home':
-      return <HomeHero character={character} />
+      return <ChatPage character={character} />
 
     case 'wishes':
       return (
         <StagePage
           id="wishes"
-          stage="Этап 2"
+          stage="Этап 3"
           title="Желания"
           description="Здесь появятся желания: план из 3–7 шагов, прогресс и статус. Без счётчиков и лимитов — желаний может быть сколько угодно."
           icon={Sparkles}

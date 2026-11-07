@@ -13,16 +13,17 @@ def test_health(client: TestClient) -> None:
     assert body["limits"] == "unlimited"
 
 
-def test_chat_stub_returns_error_envelope(client: TestClient) -> None:
+def test_chat_streams_offline_without_keys(client: TestClient) -> None:
     response = client.post(
         "/api/chat",
         json={"sessionId": "session-1", "message": "Привет, рыбка"},
     )
 
-    assert response.status_code == 501
-    body = response.json()
-    assert body["error"]["code"] == "not_implemented"
-    assert set(body["error"]) == {"code", "message"}
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert '"delta"' in response.text
+    assert '"provider":"offline"' in response.text
+    assert response.text.rstrip().endswith("data: [DONE]")
 
 
 def test_validation_uses_same_envelope(client: TestClient) -> None:
@@ -32,6 +33,16 @@ def test_validation_uses_same_envelope(client: TestClient) -> None:
     body = response.json()
     assert body["error"]["code"] == "validation_error"
     assert "message" in body["error"]["message"]
+
+
+def test_chat_rejects_unknown_character(client: TestClient) -> None:
+    response = client.post(
+        "/api/chat",
+        json={"sessionId": "s", "message": "Привет", "character": "dragon"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "validation_error"
 
 
 def test_wishes_stub(client: TestClient) -> None:

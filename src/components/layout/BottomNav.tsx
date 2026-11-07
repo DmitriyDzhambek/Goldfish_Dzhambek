@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { BrainCircuit, Sparkles, UserRound, Waves, type LucideIcon } from 'lucide-react'
+import { BrainCircuit, MessageCircle, Sparkles, UserRound, type LucideIcon } from 'lucide-react'
 import styles from './BottomNav.module.css'
 
 export type TabId = 'home' | 'wishes' | 'memory' | 'profile'
@@ -10,7 +10,7 @@ interface BottomNavProps {
 }
 
 const ITEMS: ReadonlyArray<{ id: TabId; label: string; icon: LucideIcon }> = [
-  { id: 'home', label: 'Сцена', icon: Waves },
+  { id: 'home', label: 'Чат', icon: MessageCircle },
   { id: 'wishes', label: 'Желания', icon: Sparkles },
   { id: 'memory', label: 'Память', icon: BrainCircuit },
   { id: 'profile', label: 'Профиль', icon: UserRound },

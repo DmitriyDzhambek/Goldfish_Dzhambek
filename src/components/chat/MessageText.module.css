@@ -1,0 +1,101 @@
+.text {
+  color: var(--text);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.text p + p,
+.text p + ul,
+.text p + ol,
+.text ul + p,
+.text ol + p {
+  margin-top: 0.6em;
+}
+
+.text strong {
+  color: var(--gold-100);
+  font-weight: 600;
+}
+
+.text em {
+  color: var(--gold-200);
+}
+
+.text code {
+  padding: 0.1em 0.38em;
+  border-radius: 6px;
+  border: 1px solid var(--stroke-soft);
+  background: rgba(255, 255, 255, 0.07);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.86em;
+}
+
+.text pre {
+  margin: 0.7em 0 0.2em;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--stroke-soft);
+  background: rgba(0, 0, 0, 0.35);
+  overflow-x: auto;
+}
+
+.text pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.text ul,
+.text ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32em;
+  margin: 0.55em 0 0;
+  padding-left: 1.35em;
+}
+
+.text ul {
+  list-style: none;
+  padding-left: 1.1em;
+}
+
+.text ul li {
+  position: relative;
+}
+
+.text ul li::before {
+  content: '';
+  position: absolute;
+  left: -1em;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold-300);
+  box-shadow: 0 0 8px rgba(249, 207, 107, 0.5);
+}
+
+.text ol {
+  list-style: decimal;
+}
+
+.text ol li::marker {
+  color: var(--gold-300);
+  font-variant-numeric: tabular-nums;
+}
+
+.text h3 {
+  margin: 0.75em 0 0.25em;
+  color: var(--gold-100);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.text > :first-child {
+  margin-top: 0;
+}
