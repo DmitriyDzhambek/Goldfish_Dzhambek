@@ -1,0 +1,3 @@
+# Зависимости Python для Vercel (Serverless Functions).
+# Основной список живёт в backend/requirements.txt.
+-r backend/requirements.txt
